@@ -12,7 +12,7 @@ public class LancerRaytracer {
     public static void main(String args[]){
 
         // Le fichier de description de la scène si pas fournie
-        String fichier_description="../simple.txt";
+        String fichier_description="resources/simple.txt";
 
         // largeur et hauteur par défaut de l'image à reconstruire
         int largeur = 512, hauteur = 512;
@@ -41,10 +41,13 @@ public class LancerRaytracer {
         // Ici on calcule toute l'image (0,0) -> (largeur, hauteur)
 
         int x0 = 0, y0 = 0;
+
         // Mode Normal
-        //int l = largeur, h = hauteur;
+        int l = largeur, h = hauteur;
+
         // Question 3
-        int l = largeur - largeur/2, h = hauteur - hauteur/2;
+        //On coupe l'image en 2 sur les 2 axes pour pouvoir afficher qu'un quart de l'image
+        //int l = largeur/2, h = hauteur/2;
 
 
         // Chronométrage du temps de calcul
@@ -54,7 +57,8 @@ public class LancerRaytracer {
         Image image = scene.compute(x0, y0, l, h);
 
         // Question 3
-        Image image2 = scene.compute(l, h, l, h);
+        // Nous affichons le quart inférieur droit de l'image ici
+        //Image image2 = scene.compute(l, h, l, h);
 
         Instant fin = Instant.now();
 
@@ -66,10 +70,13 @@ public class LancerRaytracer {
         disp.setImage(image, x0, y0);
 
         // Question 3
-        System.out.println("Largeur : " + largeur + " - l : " + l);
-        System.out.println("Hauteur : " + hauteur + " - h : " + h);
-        System.out.println("Image 2 Width : " + image2.getWidth());
-        System.out.println("Image 2 Height : " + image2.getHeight());
-        disp.setImage(image2, h, l);
+
+        // Affichage du quart inférieur droit de l'image calculée
+        //System.out.println("Largeur : " + largeur + " - l : " + l);
+        //System.out.println("Hauteur : " + hauteur + " - h : " + h);
+        //System.out.println("Image 2 Width : " + image2.getWidth());
+        //System.out.println("Image 2 Height : " + image2.getHeight());
+
+        //disp.setImage(image2, h, l);
     }
 }
