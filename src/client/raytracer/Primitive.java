@@ -1,4 +1,4 @@
-package raytracer;
+package client.raytracer;
 import java.awt.Color;
 import java.io.*;
 /** Classe abstraite commune à tous les primitives géométriques pouvant

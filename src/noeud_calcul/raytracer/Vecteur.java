@@ -1,4 +1,4 @@
-package raytracer;
+package noeud_calcul.raytracer;
 import java.io.*;
 
 public class Vecteur implements Serializable{

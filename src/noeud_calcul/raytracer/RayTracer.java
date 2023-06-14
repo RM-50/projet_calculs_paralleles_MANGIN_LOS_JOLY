@@ -1,4 +1,4 @@
-package raytracer;
+package noeud_calcul.raytracer;
 
 import java.awt.image.BufferedImage;
 import java.awt.Color;

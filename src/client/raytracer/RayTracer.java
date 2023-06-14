@@ -1,4 +1,4 @@
-package raytracer;
+package client.raytracer;
 
 import java.awt.image.BufferedImage;
 import java.awt.Color;

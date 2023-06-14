@@ -1,4 +1,4 @@
-package raytracer;
+package noeud_calcul.raytracer;
 import java.io.*;
 /** Classe permettant la représentation d'une source ponctuelle. Une source
  * est caractérisée par sa position dans l'espace et ses valeurs d'intensité 
