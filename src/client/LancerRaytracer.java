@@ -12,21 +12,50 @@ public class LancerRaytracer {
 
     public static void main(String args[]){
 
+        // Vérification que l'adress ip et le port de l'annuaire du service central
+        if (args.length < 2){
+            throw new Error("Adresse IP et Port requis ! (dans cet ordre)");
+        }
+
+        String ip = args[0];
+        int port = Integer.parseInt(args[1]);
+
         // Le fichier de description de la scène si pas fournie
-        String fichier_description="resources/simple.txt";
+        String fichier_description = "resources/simple.txt";
 
         // largeur et hauteur par défaut de l'image à reconstruire
         int largeur = 512, hauteur = 512;
 
-        if(args.length > 0){
-            fichier_description = args[0];
-            if(args.length > 1){
-                largeur = Integer.parseInt(args[1]);
-                if(args.length > 2)
-                    hauteur = Integer.parseInt(args[2]);
+        // Nombre de decoupage de l'image
+        int nbDecoup = 1;
+
+        if(args.length > 2){
+            try{
+                fichier_description = "./resource/" + args[2];
+            }catch(Exception e){
+                System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (fichier simple.txt)");
             }
-        }else{
-            System.out.println(aide);
+            if(args.length > 3){
+                try{
+                    largeur = Integer.parseInt(args[3]);
+                }catch(Exception e){
+                    System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (largeur 512)");
+                }
+                if(args.length > 4){
+                    try{
+                        hauteur = Integer.parseInt(args[4]);
+                    }catch(Exception e){
+                        System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (hauteur 512)");
+                    }
+                    if (args.length > 5) {
+                        try{
+                            nbDecoup = Integer.parseInt(args[5]);
+                        }catch(Exception e){
+                            System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (largeur 512)");
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -44,7 +73,7 @@ public class LancerRaytracer {
         int x0 = 0, y0 = 0;
 
         // Mode Normal
-        int l = largeur, h = hauteur;
+        int l = largeur/nbDecoup, h = hauteur/nbDecoup;
 
         // Question 3
         //On coupe l'image en 2 sur les 2 axes pour pouvoir afficher qu'un quart de l'image
@@ -56,6 +85,7 @@ public class LancerRaytracer {
         System.out.println("Calcul de l'image :\n - Coordonnées : "+x0+","+y0
                            +"\n - Taille "+ largeur + "x" + hauteur);
         Image image = scene.compute(x0, y0, l, h);
+
 
         // Question 3
         // Nous affichons le quart inférieur droit de l'image ici
