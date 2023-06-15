@@ -35,30 +35,31 @@ public class LancerRaytracer {
         // Nombre de decoupage de l'image
         int nbDecoup = 1;
 
-        if(args.length > 2){
+        if (args.length > 2) {
             try{
-                fichier_description = "../resources/" + args[2];
+                nbDecoup = Integer.parseInt(args[2]);
             }catch(Exception e){
-                System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (fichier simple.txt)");
+                System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (nbDecoup 1)");
             }
             if(args.length > 3){
                 try{
-                    largeur = Integer.parseInt(args[3]);
+                    fichier_description = "../resources/" + args[3];
                 }catch(Exception e){
-                    System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (largeur 512)");
+                    System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (fichier simple.txt)");
                 }
                 if(args.length > 4){
                     try{
-                        hauteur = Integer.parseInt(args[4]);
+                        largeur = Integer.parseInt(args[4]);
                     }catch(Exception e){
-                        System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (hauteur 512)");
+                        System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (largeur 512)");
                     }
-                    if (args.length > 5) {
+                    if(args.length > 5){
                         try{
-                            nbDecoup = Integer.parseInt(args[5]);
+                            hauteur = Integer.parseInt(args[5]);
                         }catch(Exception e){
-                            System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (nbDecoup 1)");
+                            System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (hauteur 512)");
                         }
+
                     }
                 }
             }
