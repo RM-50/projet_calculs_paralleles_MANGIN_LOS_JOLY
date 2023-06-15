@@ -1,10 +1,16 @@
 package client;
 import java.time.Instant;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.time.Duration;
 
-import client.raytracer.Disp;
-import client.raytracer.Scene;
-import client.raytracer.Image;
+import raytracer.Disp;
+import raytracer.Scene;
+import noeud_calcul.ServiceCalcul;
+import raytracer.Image;
 
 public class LancerRaytracer {
 
@@ -21,7 +27,7 @@ public class LancerRaytracer {
         int port = Integer.parseInt(args[1]);
 
         // Le fichier de description de la scène si pas fournie
-        String fichier_description = "resources/simple.txt";
+        String fichier_description = "../resources/simple.txt";
 
         // largeur et hauteur par défaut de l'image à reconstruire
         int largeur = 512, hauteur = 512;
@@ -31,7 +37,7 @@ public class LancerRaytracer {
 
         if(args.length > 2){
             try{
-                fichier_description = "./resource/" + args[2];
+                fichier_description = "../resources/" + args[2];
             }catch(Exception e){
                 System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (fichier simple.txt)");
             }
@@ -51,7 +57,7 @@ public class LancerRaytracer {
                         try{
                             nbDecoup = Integer.parseInt(args[5]);
                         }catch(Exception e){
-                            System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (largeur 512)");
+                            System.out.println("Les données saisies sont erronées, valeur par défaut sélectionnée (nbDecoup 1)");
                         }
                     }
                 }
@@ -70,7 +76,7 @@ public class LancerRaytracer {
         // - l et h : hauteur et largeur de l'image calculée
         // Ici on calcule toute l'image (0,0) -> (largeur, hauteur)
 
-        int x0 = 0, y0 = 0;
+        int x = 0, y = 0;
 
         // Mode Normal
         int l = largeur/nbDecoup, h = hauteur/nbDecoup;
@@ -82,9 +88,62 @@ public class LancerRaytracer {
 
         // Chronométrage du temps de calcul
         Instant debut = Instant.now();
-        System.out.println("Calcul de l'image :\n - Coordonnées : "+x0+","+y0
+        System.out.println("Calcul de l'image :"
                            +"\n - Taille "+ largeur + "x" + hauteur);
-        Image image = scene.compute(x0, y0, l, h);
+
+         // Récuperer annuaire
+		Registry reg = null;
+		try {
+			reg = LocateRegistry.getRegistry(ip, port);
+		} catch (NumberFormatException e) {
+			System.out.println("Erreur lors de la récupération de l'annuaire : NumberFormatException");
+		} catch (RemoteException e) {
+			System.out.println("Erreur lors de la récupération de l'annuaire");
+		}
+		
+		// Récupérer service central
+        service_central.ServiceCentral distributeur = null;
+		try {
+            distributeur = (service_central.ServiceCentral) reg.lookup("serviceCentral");
+		} catch (AccessException e) {
+			System.out.println("Permission non accordée");
+		} catch (RemoteException e) {
+			System.out.println("Erreur lors de l'execution du service");
+		} catch (NotBoundException e) {
+			System.out.println("Le service est inaccessible");
+		}
+
+        // Pour chaque decoupage
+        for (int i = 0; i < hauteur-h; i+=h){
+                for (int j = 0; j < largeur-l; j+=l){
+                // Envoyer le morceau de calcul correspondant
+                ServiceCalcul noeud = null;
+                try{
+                    noeud = distributeur.envoyerNoeud();
+                }catch(RemoteException e ){
+                    System.out.println("Erreur lors de la récupération du noeud de calcul");
+                }
+                Image img = null;
+                try{
+                    img = noeud.calculerImage(scene, x, y, l, h);
+                    System.out.println("Je suis tout la x : " + x + " et tout ici y : " + y);
+                    disp.setImage(img, x, y);
+                }catch(RemoteException e){
+                    try{
+                        distributeur.supprimerNoeud(noeud);
+                        x -= l;
+                        j -= l;
+                    }catch(RemoteException exception){
+                        System.out.println("Erreur lors de la demande de suppression du noeud de calcul au service central");
+                    }
+                }
+                
+                x += l;
+            }
+            y += h;
+            x = 0;
+        }
+        //Image image = scene.compute(x0, y0, l, h);
 
 
         // Question 3
@@ -98,7 +157,7 @@ public class LancerRaytracer {
         System.out.println("Image calculée en :"+duree+" ms");
 
         // Affichage de l'image calculée
-        disp.setImage(image, x0, y0);
+        //disp.setImage(image, x0, y0);
 
         // Question 3
 

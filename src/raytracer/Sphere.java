@@ -1,4 +1,4 @@
-package noeud_calcul.raytracer;
+package raytracer;
 import java.awt.Color;
 
 /** Classe permettant la représentation d'une sphère 

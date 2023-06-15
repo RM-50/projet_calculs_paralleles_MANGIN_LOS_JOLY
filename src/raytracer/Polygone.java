@@ -1,4 +1,4 @@
-package client.raytracer;
+package raytracer;
 import java.awt.Color;
 import java.lang.Math;
 
