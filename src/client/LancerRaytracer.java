@@ -1,5 +1,7 @@
 package client;
 import java.time.Instant;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -114,31 +116,43 @@ public class LancerRaytracer {
 			System.out.println("Le service est inaccessible");
 		}
 
+
         // Pour chaque decoupage
-        for (int i = 0; i < hauteur-h; i+=h){
-                for (int j = 0; j < largeur-l; j+=l){
-                // Envoyer le morceau de calcul correspondant
-                ServiceCalcul noeud = null;
-                try{
-                    noeud = distributeur.envoyerNoeud();
-                }catch(RemoteException e ){
-                    System.out.println("Erreur lors de la récupération du noeud de calcul");
-                }
-                Image img = null;
-                try{
-                    img = noeud.calculerImage(scene, x, y, l, h);
-                    System.out.println("Je suis tout la x : " + x + " et tout ici y : " + y);
-                    disp.setImage(img, x, y);
-                }catch(RemoteException e){
-                    try{
-                        distributeur.supprimerNoeud(noeud);
-                        x -= l;
-                        j -= l;
-                    }catch(RemoteException exception){
-                        System.out.println("Erreur lors de la demande de suppression du noeud de calcul au service central");
-                    }
-                }
-                
+        for (int i = 0; i <= hauteur-h; i+=h){
+                for (int j = 0; j <= largeur-l; j+=l){
+                /*final service_central.ServiceCentral tdistrib = distributeur;
+                final int tx = x;
+                final int ty = y;
+                final int th = h;
+                final int tl = l; 
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Envoyer le morceau de calcul correspondant
+                        ServiceCalcul noeud = null;
+                        try{
+                            noeud = tdistrib.envoyerNoeud();
+                            Image img = null;
+                            try{
+                                synchronized (disp){
+                                    img = noeud.calculerImage(scene, tx, ty, tl, th);
+                                    System.out.println("Je suis tout la x : " + tx + " et tout ici y : " + ty);
+                                    disp.setImage(img, tx, ty);
+                                }
+                            }catch(RemoteException e){
+                                try{
+                                    tdistrib.supprimerNoeud(noeud);
+                                }catch(RemoteException exception){
+                                    System.out.println("Erreur lors de la demande de suppression du noeud de calcul au service central");
+                                }
+                            }catch(Exception e){}
+                        }catch(RemoteException e ){
+                            System.out.println("Erreur lors de la récupération du noeud de calcul");
+                        }catch(Exception e){}
+                    } 
+                }).start();*/
+                ThreadClients t = new ThreadClients(scene, x, y, h, l, disp, distributeur);
+                t.start();
                 x += l;
             }
             y += h;

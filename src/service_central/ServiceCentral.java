@@ -2,7 +2,6 @@ package service_central;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-
 import noeud_calcul.ServiceCalcul;
 
 public interface ServiceCentral extends Remote{

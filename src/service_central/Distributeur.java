@@ -3,6 +3,8 @@ package service_central;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import noeud_calcul.ServiceCalcul;
 
@@ -10,11 +12,13 @@ public class Distributeur implements ServiceCentral{
 
     private List<ServiceCalcul> noeuds;
     private int noeudCourant;
-    private ServiceCalcul noeud;
+    private ServiceCalcul n;
+    private Lock verrou;
 
     public Distributeur(){
         this.noeuds = new ArrayList<ServiceCalcul>();
         this.noeudCourant = 0;
+        this.verrou = new ReentrantLock();
     }
 
     @Override
@@ -34,15 +38,15 @@ public class Distributeur implements ServiceCentral{
         Thread t = new Thread(new Runnable(){
             @Override
             public void run() {
-                synchronized (noeuds){
-                    if (noeuds.size() > 0){
-                        if (noeudCourant >= noeuds.size())
-                            noeudCourant = 0;
-                        noeud = noeuds.get(noeudCourant); 
-                        noeudCourant++;
-                    }else{
-                        throw new Error("Aucun noeud de calcul connecté");
-                    }
+                verrou.lock();
+                if (noeuds.size() > 0){
+                    if (noeudCourant >= noeuds.size())
+                        noeudCourant = 0;
+                    n = noeuds.get(noeudCourant); 
+                    noeudCourant++;
+                    verrou.unlock();
+                }else{
+                    verrou.unlock();
                 }
             }
         });
@@ -55,7 +59,7 @@ public class Distributeur implements ServiceCentral{
                 e.printStackTrace();
             }
         }
-        return noeud;
+        return n;
     }
 
     @Override
